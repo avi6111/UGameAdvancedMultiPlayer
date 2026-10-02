@@ -39,7 +39,7 @@ jobs:
         run: |
           rm -rf "site/${{ inputs.version }}"        # 同版本号重发时先删旧的
           cp -r ./Builds/WebGL_Latest "site/${{ inputs.version }}" # 版本文件夹
-          cp -r ./Build/WebGL_Latest/. site/                      # 根目录 = 最新版
+          cp -r ./Builds/WebGL_Latest/. site/                      # 根目录 = 最新版
 
       - name: 只保留最近 3 个版本
         run: |
