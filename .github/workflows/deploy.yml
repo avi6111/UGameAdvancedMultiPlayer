@@ -1,0 +1,29 @@
+name: Deploy Unity WebGL to Pages
+
+on:
+  push:
+    branches: [main]   # 推送到 main 分支时自动部署
+  workflow_dispatch:   # 也允许手动触发
+
+permissions:
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 上传构建产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./Build/WebGL_Full_1.0.0    # ← 改成你 WebGL 文件所在的目录
+
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
