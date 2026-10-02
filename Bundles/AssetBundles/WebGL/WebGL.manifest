@@ -1,0 +1,15 @@
+ManifestFileVersion: 0
+UnityVersion: 6000.2.5f1
+CRC: 3211148723
+HashAppended: 0
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: config/binconfigdata/localizedstrings
+      Dependencies: {}
+    Info_1:
+      Name: config/binconfigdata/sheet1
+      Dependencies: {}
+    Info_2:
+      Name: config/binconfigdata/sheet2
+      Dependencies: {}
