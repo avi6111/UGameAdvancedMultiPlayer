@@ -1,0 +1,66 @@
+name: Deploy versioned
+
+on:
+  workflow_dispatch:          # 手动触发，输入版本号
+    inputs:
+      version:
+        description: '版本号，如 v1.0（必须以 v 开头）'
+        required: true
+
+permissions:
+  contents: write
+
+# 防止两次部署同时跑导致互相覆盖
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 拉取现有 gh-pages 内容（第一次发布时不存在就跳过）
+        run: |
+          git fetch origin gh-pages || true
+          if git rev-parse --verify origin/gh-pages >/dev/null 2>&1; then
+            git worktree add site origin/gh-pages
+          else
+            mkdir site
+          fi
+
+      # ============================================
+      # 【一次性步骤】发完 v1.0 之后请把整个这段删掉！
+      # 作用：把当前根目录（0.9 的内容）备份成 v0.9 文件夹
+      # ============================================
+      - name: 【一次性】把当前根目录备份为 v0.9
+        run: |
+          mkdir -p site/v0.9
+          cp -r site/. site/v0.9/
+          rm -rf site/v0.9/v0.9
+      # ============================================
+      # 一次性步骤到此结束
+      # ============================================
+
+      - name: 清理根目录旧文件（保留 v* 版本文件夹）
+        run: |
+          cd site
+          find . -maxdepth 1 -mindepth 1 ! -name 'v*' -exec rm -rf {} +
+
+      - name: 放入新版本
+        run: |
+          rm -rf "site/${{ inputs.version }}"        # 同版本号重发时先删旧的
+          cp -r ./Builds/WebGL_Latest "site/${{ inputs.version }}" # 版本文件夹
+          cp -r ./Build/WebGL_Latest/. site/                      # 根目录 = 最新版
+
+      - name: 只保留最近 3 个版本
+        run: |
+          cd site
+          ls -d v* 2>/dev/null | sort -V | head -n -3 | xargs -r rm -rf
+
+      - name: 部署
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
