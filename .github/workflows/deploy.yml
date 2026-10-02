@@ -22,7 +22,7 @@ jobs:
       - name: 上传构建产物
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./Builds/WebGL_Full_1.0.0    # ← 改成你 WebGL 文件所在的目录
+          path: ./Builds/WebGL_Full_1.0.0/EditorLevelModels    # ← 改成你 WebGL 文件所在的目录
 
       - name: 部署到 GitHub Pages
         id: deployment
